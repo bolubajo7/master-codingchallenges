@@ -2,34 +2,21 @@ import java.util.*;
 
 public class SumOfK {
 
-    private static int maxNumberofDistances;
-    private static int numberOfTowns;
+    private static int maxNumberOfDistances;
 
     public static Integer chooseBestSum(int t, int k, List<Integer> ls) {
-        maxNumberofDistances = t;
-        numberOfTowns = k;
-        Map<Integer, Integer> countMap = new TreeMap<>();
-        for(Integer num : ls)  {
-            countMap.compute(num, (key, value) -> {
-               if(value == null) {
-                   return 1;
-               } else {
-                   return value + 1;
-               }
-            });
-        }
+        maxNumberOfDistances = t;
+        int numberOfTowns = k;
 
       Set<Integer> sum = new TreeSet<>();
-      int [] result = new int[numberOfTowns];
-      int [] numbers = new int[countMap.size()];
-      int [] count = new int[countMap.size()];
+      int [] numbers = new int[ls.size()];
       int index = 0;
-      for(Map.Entry<Integer, Integer> entry : countMap.entrySet()) {
-          numbers[index] = entry.getKey();
-          count[index] = entry.getValue();
-          index++;
-      }
-      solveCombinations(numbers, count, result, 0, sum);
+        for (Integer num : ls) {
+            numbers[index] = num;
+            index++;
+        }
+
+      generate(numberOfTowns, numbers, sum);
 
       Integer answer;
       if(!sum.isEmpty()) {
@@ -44,33 +31,57 @@ public class SumOfK {
     }
 
 
-    private static void solveCombinations(int[] numbers, int[] count, int[] result, int level, Set<Integer> sum) {
-        int totalSum = 0;
-        if(level == result.length) {
+    public  static List<int[]> generate(int r, int [] numbers, Set<Integer> sum) {
+        int[] input = numbers.clone();    // input array
+        int k = r;                             // sequence length
 
+        List<int[]> subsets = new ArrayList<>();
 
+        int[] s = new int[k];                  // here we'll keep indices
+        // pointing to elements in input array
+
+        if (k <= input.length) {
+            // first index sequence: 0, 1, 2, ...
+            for (int i = 0; (s[i] = i) < k - 1; i++) ;
+            subsets.add(getSubset(input, s, sum));
+            for (; ; ) {
+                int i;
+                // find position of item that can be incremented
+                for (i = k - 1; i >= 0 && s[i] == input.length - k + i; i--) ;
+                if (i < 0) {
+                    break;
+                }
+                s[i]++;                    // increment this item
+                for (++i; i < k; i++) {    // fill up remaining items
+                    s[i] = s[i - 1] + 1;
+                }
+                subsets.add(getSubset(input, s, sum));
+            }
+        }
+        return subsets;
+    }
+
+// generate actual subset by index sequence
+        public static int[] getSubset(int[] input, int[] subset, Set<Integer> sum) {
+            int[] result = new int[subset.length];
+            for (int i = 0; i < subset.length; i++) {
+                result[i] = input[subset[i]];
+            }
+
+            int totalSum = 0;
             for (int num : result) {
 
                 totalSum = totalSum + num;
             }
 
-            if(totalSum <= maxNumberofDistances) {
+            if(totalSum <= maxNumberOfDistances) {
 
                 sum.add(totalSum);
             }
-            return;
+
+
+            return result;
         }
 
-        for(int i = 0; i < numbers.length; i++) {
-            if(count[i] == 0) {
-                continue;
-            }
-
-            result[level] = numbers[i];
-            count[i]--;
-            solveCombinations(numbers, count, result, level + 1, sum);
-            count[i]++;
-        }
-    }
 
 }
