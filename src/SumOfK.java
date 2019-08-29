@@ -32,56 +32,65 @@ public class SumOfK {
 
 
     public  static List<int[]> generate(int r, int [] numbers, Set<Integer> sum) {
-        int[] input = numbers.clone();    // input array
-        int k = r;                             // sequence length
+
+        // input array
+        int[] input = numbers.clone();
+        int k = r;
 
         List<int[]> subsets = new ArrayList<>();
 
-        int[] s = new int[k];                  // here we'll keep indices
-        // pointing to elements in input array
+        // Index pointing to elements in input array
+        int[] numbersIndex = new int[k];
+
 
         if (k <= input.length) {
-            // first index sequence: 0, 1, 2, ...
-            for (int i = 0; (s[i] = i) < k - 1; i++) ;
-            subsets.add(getSubset(input, s, sum));
-            for (; ; ) {
+
+            for (int i = 0; (numbersIndex[i] = i) < k - 1; i++) ;
+            subsets.add(getSubset(input, numbersIndex, sum));
+
+            while(true) {
                 int i;
+
                 // find position of item that can be incremented
-                for (i = k - 1; i >= 0 && s[i] == input.length - k + i; i--) ;
+                for (i = k - 1; i >= 0 && numbersIndex[i] == input.length - k + i; i--) ;
                 if (i < 0) {
                     break;
                 }
-                s[i]++;                    // increment this item
-                for (++i; i < k; i++) {    // fill up remaining items
-                    s[i] = s[i - 1] + 1;
+                numbersIndex[i]++;
+
+                // fill up remaining items
+                for (++i; i < k; i++) {
+                    numbersIndex[i] = numbersIndex[i - 1] + 1;
                 }
-                subsets.add(getSubset(input, s, sum));
+                subsets.add(getSubset(input, numbersIndex, sum));
             }
         }
         return subsets;
     }
 
-// generate actual subset by index sequence
-        public static int[] getSubset(int[] input, int[] subset, Set<Integer> sum) {
-            int[] result = new int[subset.length];
-            for (int i = 0; i < subset.length; i++) {
-                result[i] = input[subset[i]];
-            }
-
-            int totalSum = 0;
-            for (int num : result) {
-
-                totalSum = totalSum + num;
-            }
-
-            if(totalSum <= maxNumberOfDistances) {
-
-                sum.add(totalSum);
-            }
-
-
-            return result;
+    // generate actual subset by index sequence
+    public static int[] getSubset(int[] input, int[] subset, Set<Integer> sum) {
+        int[] result = new int[subset.length];
+        for (int i = 0; i < subset.length; i++) {
+            result[i] = input[subset[i]];
         }
+
+        int totalSum = 0;
+        for (int num : result) {
+
+            totalSum = totalSum + num;
+
+        }
+
+        if(totalSum <= maxNumberOfDistances) {
+
+            sum.add(totalSum);
+
+        }
+
+        return result;
+
+    }
 
 
 }
