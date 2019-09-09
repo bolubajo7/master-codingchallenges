@@ -15,4 +15,10 @@ public class CheckersMoveTest {
        String [] B = {"X....",".X...","..O..","...X.","....."};
        assertEquals(0, new CheckersMove().solution(B));
     }
+
+    @Test
+    public void solution3() {
+        String [] B = {"X....",".X.X.","..O..","...X.","..O.."};
+        assertEquals(3, new CheckersMove().solution(B));
+    }
 }
